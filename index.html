@@ -497,7 +497,33 @@ body{
 .round-card h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
 .round-card p{font-size:12px;color:var(--text2);line-height:1.55;margin:0}
 
-.section-label{
+.role-ref-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.role-ref-row:last-child{border-bottom:none}
+.role-ref-name{color:var(--text);font-weight:500;white-space:nowrap}
+.role-ref-desc{color:var(--text2);font-size:11px;text-align:right}
+
+.roster-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:5px;
+  animation:slideIn .2s ease;
+}
+.roster-name{font-size:13px;font-weight:500;color:#fff;flex:1}
+.roster-role{
+  font-family:var(--mono);font-size:10px;padding:2px 8px;
+  border-radius:3px;border:1px solid var(--border2);color:var(--text2);
+  background:var(--bg);white-space:nowrap;
+}
+.roster-role.node{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+.roster-role.bad{color:var(--red);border-color:var(--red);background:var(--red-dim)}
+.roster-role.ben{color:var(--green);border-color:var(--green);background:var(--green-dim)}
+.roster-role.audit{color:var(--orange);border-color:var(--orange);background:var(--orange-dim)}
+.roster-remove{
+  padding:3px 8px;border:1px solid var(--border2);border-radius:3px;
+  background:transparent;color:var(--text3);font-family:var(--mono);font-size:10px;
+  cursor:pointer;transition:all .12s;
+}
+.roster-remove:hover{border-color:var(--red);color:var(--red)}
   font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;
   color:var(--text3);margin-bottom:8px;
 }
@@ -597,43 +623,70 @@ body{
       </div>
     </div>
 
-    <!-- ══ ROLES ══ -->
+    <!-- ROLES -->
     <div class="page" id="page-roles">
       <div class="page-header">
         <div>
           <div class="page-title">Roles</div>
-          <div class="page-sub">Assign before starting Round 1</div>
+          <div class="page-sub">Type each student's name and assign their role</div>
         </div>
         <div class="page-actions">
+          <button class="btn btn-ghost" onclick="clearAllRoles()">Clear all</button>
           <button class="btn btn-primary" onclick="goPage('r1')">Start Round 1</button>
         </div>
       </div>
       <div class="page-body">
-        <div class="pane">
-          <div class="pane-header"><span class="pane-title">Role Assignments</span></div>
-          <div class="pane-body" style="padding:0">
-            <table class="rtable">
-              <thead><tr><th>Role</th><th>Responsibility</th><th>Size</th></tr></thead>
-              <tbody>
-                <tr><td><span class="rname">Donor</span><span class="rtag">submits</span></td><td>Decides amount and beneficiary. Watches to see if funds arrive.</td><td>1–2</td></tr>
-                <tr><td><span class="rname">NGO Coordinator</span><span class="rtag">submits</span></td><td>Fills in transaction details and submits on behalf of the donor.</td><td>1–2</td></tr>
-                <tr><td><span class="rname">Node Alpha</span><span class="rtag">votes</span></td><td>Receives every transaction. Votes approve or reject independently.</td><td>1–3</td></tr>
-                <tr><td><span class="rname">Node Beta</span><span class="rtag">votes</span></td><td>Second independent node. 2 of 3 nodes must agree before a block is recorded.</td><td>1–3</td></tr>
-                <tr><td><span class="rname">Node Gamma</span><span class="rtag">votes</span></td><td>Try making this node hostile in Round 2 — see if two honest nodes still reach consensus.</td><td>1–3</td></tr>
-                <tr><td><span class="rname">Beneficiary</span><span class="rtag">receives</span></td><td>Holds a digital ID — verified or not. ID determines Round 3 acceptance.</td><td>2–4</td></tr>
-                <tr><td><span class="rname">Bad Actor</span><span class="rtag">attacks</span></td><td>Tries to submit fraudulent transactions or tamper with records. Works in Round 1. Fails in 2 and 3.</td><td>1–2</td></tr>
-                <tr><td><span class="rname">Auditor</span><span class="rtag">reviews</span></td><td>Reviews the ledger after each round. Round 1: hard. Round 2: trivial.</td><td>1–2</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div class="split" style="align-items:start">
 
-        <div class="section-label">Beneficiary ID Cards</div>
-        <div class="id-cards">
-          <div class="id-card verified"><div class="id-card-label">REF-001</div><div class="id-card-status">Verified</div><p>Passes all checks in every round.</p></div>
-          <div class="id-card verified"><div class="id-card-label">REF-002</div><div class="id-card-status">Verified</div><p>Second verified beneficiary. Also passes all checks.</p></div>
-          <div class="id-card unverified"><div class="id-card-label">REF-999</div><div class="id-card-status">Unverified</div><p>Smart contract auto-rejects any transaction to this ID in Round 3.</p></div>
-          <div class="id-card unverified"><div class="id-card-label">REF-000</div><div class="id-card-status">Fake — Bad Actor</div><p>Always rejected in Round 3 regardless of purpose or node votes.</p></div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="section-label">Add Student</div>
+            <div class="pane">
+              <div class="pane-body">
+                <div class="field">
+                  <label>Student Name</label>
+                  <input type="text" id="assign-name" placeholder="e.g. Alice" onkeydown="if(event.key==='Enter')assignRole()">
+                </div>
+                <div class="field">
+                  <label>Role</label>
+                  <select id="assign-role">
+                    <option value="Donor">Donor</option>
+                    <option value="NGO Coordinator">NGO Coordinator</option>
+                    <option value="Node Alpha">Node Alpha</option>
+                    <option value="Node Beta">Node Beta</option>
+                    <option value="Node Gamma">Node Gamma</option>
+                    <option value="Beneficiary REF-001">Beneficiary — REF-001 (Verified)</option>
+                    <option value="Beneficiary REF-002">Beneficiary — REF-002 (Verified)</option>
+                    <option value="Beneficiary REF-999">Beneficiary — REF-999 (Unverified)</option>
+                    <option value="Bad Actor">Bad Actor</option>
+                    <option value="Auditor">Auditor</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary btn-full" onclick="assignRole()">Assign role</button>
+              </div>
+            </div>
+
+            <div class="section-label">Role Guide</div>
+            <div class="pane">
+              <div class="pane-body" style="display:flex;flex-direction:column;gap:8px;padding:12px 14px">
+                <div class="role-ref-row"><span class="role-ref-name">Donor</span><span class="role-ref-desc">Sends funds, tracks delivery</span></div>
+                <div class="role-ref-row"><span class="role-ref-name">NGO Coordinator</span><span class="role-ref-desc">Processes & submits transactions</span></div>
+                <div class="role-ref-row"><span class="role-ref-name">Node Alpha/Beta/Gamma</span><span class="role-ref-desc">Vote to approve or reject — 2/3 needed</span></div>
+                <div class="role-ref-row"><span class="role-ref-name">Beneficiary</span><span class="role-ref-desc">Holds a verified or fake ID</span></div>
+                <div class="role-ref-row"><span class="role-ref-name">Bad Actor</span><span class="role-ref-desc">Attempts fraud and tampering</span></div>
+                <div class="role-ref-row"><span class="role-ref-name">Auditor</span><span class="role-ref-desc">Reviews ledger for inconsistencies</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="section-label">Roster <span id="roster-count" style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-left:6px">0 assigned</span></div>
+            <div class="pane" style="min-height:280px">
+              <div class="pane-body" id="roster-list" style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:center;padding:24px 0">No students assigned yet</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1041,6 +1094,55 @@ function r3Finalize(){
   state.r3.pending=null;state.r3.votes={};
   document.getElementById('r3-pending').classList.remove('on');
   renderNodes('r3-nodes',{},'r3');
+}
+
+// Role assignment
+const roster = [];
+
+function assignRole() {
+  const name = document.getElementById('assign-name').value.trim();
+  const role = document.getElementById('assign-role').value;
+  if (!name) { document.getElementById('assign-name').focus(); return; }
+  roster.push({ id: Date.now(), name, role });
+  document.getElementById('assign-name').value = '';
+  document.getElementById('assign-name').focus();
+  renderRoster();
+}
+
+function removeFromRoster(id) {
+  const i = roster.findIndex(r => r.id === id);
+  if (i > -1) roster.splice(i, 1);
+  renderRoster();
+}
+
+function clearAllRoles() {
+  roster.length = 0;
+  renderRoster();
+}
+
+function getRoleClass(role) {
+  if (role.startsWith('Node')) return 'node';
+  if (role === 'Bad Actor') return 'bad';
+  if (role.startsWith('Beneficiary')) return 'ben';
+  if (role === 'Auditor') return 'audit';
+  return '';
+}
+
+function renderRoster() {
+  const el = document.getElementById('roster-list');
+  const count = document.getElementById('roster-count');
+  count.textContent = roster.length + ' assigned';
+  if (!roster.length) {
+    el.innerHTML = '<div style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:center;padding:24px 0">No students assigned yet</div>';
+    return;
+  }
+  el.innerHTML = roster.map(r => `
+    <div class="roster-item">
+      <span class="roster-name">${r.name}</span>
+      <span class="roster-role ${getRoleClass(r.role)}">${r.role}</span>
+      <button class="roster-remove" onclick="removeFromRoster(${r.id})">remove</button>
+    </div>
+  `).join('');
 }
 
 // Reset
