@@ -17,7 +17,7 @@
   --text:#c9d1d9;
   --text2:#8b949e;
   --text3:#4a5568;
-  --accent:#3b82f6;
+  --accent:#ff6b6b;
   --accent-dim:rgba(59,130,246,0.12);
   --green:#22c55e;
   --green-dim:rgba(34,197,94,0.1);
@@ -592,6 +592,7 @@ body{
         </div>
         <div class="page-actions">
           <button class="btn btn-primary" onclick="goPage('roles')">Get started</button>
+          <button class="btn btn-ghost" onclick="exportLedger()">Export JSON</button>
         </div>
       </div>
       <div class="page-body">
@@ -710,14 +711,14 @@ body{
             <div class="pane-header"><span class="pane-title">Submit Transaction</span></div>
             <div class="pane-body">
               <div class="field"><label>Role</label><select id="r1-role"><option>Donor</option><option>NGO Coordinator</option><option>Bad Actor</option></select></div>
-              <div class="field"><label>Beneficiary ID</label><select id="r1-ben"><option>REF-001 (Verified)</option><option>REF-002 (Verified)</option><option>REF-999 (Unverified)</option><option>REF-000 (Fake)</option></select></div>
+              <div class="field"><label>Beneficiary ID</label><select id="r1-ben"><option>REF-001 (Verified)</option><option>REF-002 (Verified)</option><option>REF-999 (Unverified)</option><option>REF-000 (Fake)</option><option>REF-003 (Verified)</option></select></div>
               <div class="field"><label>Amount (USD)</label><input type="number" id="r1-amount" value="500" min="1"></div>
-              <div class="field"><label>Purpose</label><select id="r1-purpose"><option>Food Aid</option><option>Medical Supplies</option><option>Shelter</option><option>Education</option><option>Personal Transfer</option></select></div>
+              <div class="field"><label>Purpose</label><select id="r1-purpose"><option>Food Aid</option><option>Medical Supplies</option><option>Shelter</option><option>Education</option><option>Personal Transfer</option><option>Water Supply</option></select></div>
             </div>
             <div class="pane-foot">
               <div class="btn-row">
                 <button class="btn btn-primary" style="flex:1" onclick="r1Submit()">Submit</button>
-                <button class="btn btn-danger" onclick="r1Tamper()">Tamper</button>
+                <button id="tamperBtn" class="btn btn-danger" onclick="r1Tamper()">Tamper</button>
               </div>
             </div>
           </div>
@@ -763,9 +764,9 @@ body{
             <div class="pane-header"><span class="pane-title">Submit Transaction</span></div>
             <div class="pane-body">
               <div class="field"><label>Role</label><select id="r2-role"><option>Donor</option><option>NGO Coordinator</option><option>Bad Actor</option></select></div>
-              <div class="field"><label>Beneficiary ID</label><select id="r2-ben"><option>REF-001 (Verified)</option><option>REF-002 (Verified)</option><option>REF-999 (Unverified)</option><option>REF-000 (Fake)</option></select></div>
+              <div class="field"><label>Beneficiary ID</label><select id="r2-ben"><option>REF-001 (Verified)</option><option>REF-002 (Verified)</option><option>REF-999 (Unverified)</option><option>REF-000 (Fake)</option><option>REF-003 (Verified)</option></select></div>
               <div class="field"><label>Amount (USD)</label><input type="number" id="r2-amount" value="500" min="1"></div>
-              <div class="field"><label>Purpose</label><select id="r2-purpose"><option>Food Aid</option><option>Medical Supplies</option><option>Shelter</option><option>Education</option><option>Personal Transfer</option></select></div>
+              <div class="field"><label>Purpose</label><select id="r2-purpose"><option>Food Aid</option><option>Medical Supplies</option><option>Shelter</option><option>Education</option><option>Personal Transfer</option><option>Water Supply</option></select></div>
             </div>
             <div class="pane-foot">
               <div class="btn-row">
@@ -842,9 +843,9 @@ body{
             <div class="pane-header"><span class="pane-title">Submit Transaction</span></div>
             <div class="pane-body">
               <div class="field"><label>Role</label><select id="r3-role"><option>Donor</option><option>NGO Coordinator</option><option>Bad Actor</option></select></div>
-              <div class="field"><label>Beneficiary ID</label><select id="r3-ben"><option>REF-001 (Verified)</option><option>REF-002 (Verified)</option><option>REF-999 (Unverified)</option><option>REF-000 (Fake)</option></select></div>
+              <div class="field"><label>Beneficiary ID</label><select id="r3-ben"><option>REF-001 (Verified)</option><option>REF-002 (Verified)</option><option>REF-999 (Unverified)</option><option>REF-000 (Fake)</option><option>REF-003 (Verified)</option></select></div>
               <div class="field"><label>Amount (USD)</label><input type="number" id="r3-amount" value="500" min="1"></div>
-              <div class="field"><label>Purpose</label><select id="r3-purpose"><option>Food Aid</option><option>Medical Supplies</option><option>Shelter</option><option>Education</option><option>Personal Transfer</option></select></div>
+              <div class="field"><label>Purpose</label><select id="r3-purpose"><option>Food Aid</option><option>Medical Supplies</option><option>Shelter</option><option>Education</option><option>Personal Transfer</option><option>Water Supply</option></select></div>
             </div>
             <div class="pane-foot">
               <button class="btn btn-primary btn-full" onclick="r3Submit()">Run contract</button>
@@ -924,7 +925,7 @@ body{
 </div><!-- /app-body -->
 
 <script>
-const NODES=[{id:'A',name:'Node Alpha',sub:'Peer 1/3'},{id:'B',name:'Node Beta',sub:'Peer 2/3'},{id:'G',name:'Node Gamma',sub:'Peer 3/3'}];
+const NODES=[{id:'A',name:'Node Alpha',sub:'Peer 1/3'},{id:'B',name:'Node Beta',sub:'Peer 2/3'},{id:'G',name:'Node Gamma',sub:'Peer 3/3'}, {id:'D', name:'Node Delta', sub:'Peer 4/4'}];
 const PAGES=['overview','roles','r1','r2','r3','debrief'];
 const ROUND_NAMES={overview:'—',roles:'—',r1:'Round 1 — Centralized',r2:'Round 2 — Blockchain',r3:'Round 3 — Smart Contract',debrief:'Debrief'};
 
@@ -1059,10 +1060,10 @@ function r2Tamper(){
 function r2Finalize(){
   if(!state.r2.pending){log('r2-log','No pending transaction','err');return;}
   const vs=Object.values(state.r2.votes);
-  if(vs.length<2){log('r2-log','Need at least 2 votes first','err');return;}
+  if(vs.length<3){log('r2-log','Need at least 3 votes first','err');return;}
   const ok=vs.filter(v=>v==='approve').length;
-  addBlock('r2',state.r2.pending,ok>=2?'valid':'invalid');
-  log('r2-log',ok>=2?`Consensus: ${ok}/3 approve — block added`:`Consensus failed: ${ok}/3 — rejected`,ok>=2?'ok':'err');
+  addBlock('r2',state.r2.pending,ok>=3?'valid':'invalid');
+  log('r2-log',ok>=3?`Consensus: ${ok}/3 approve — block added`:`Consensus failed: ${ok}/3 — rejected`,ok>=3?'ok':'err');
   state.r2.pending=null;state.r2.votes={};
   document.getElementById('r2-pending').classList.remove('on');
   renderNodes('r2-nodes',{},'r2');
@@ -1070,9 +1071,17 @@ function r2Finalize(){
 
 // R3
 function r3Submit(){
-  const tx=getTx('r3');
-  const ver=tx.ben.includes('Verified');
-  const sus=tx.purpose==='Personal Transfer';
+  const tx = getTx('r3');
+
+  // Rule: max transaction is $1000
+  if(tx.amount > 1000){
+    addBlock('r3', tx, 'invalid');
+    log('r3-log', 'Contract rejected: exceeds $1000 limit', 'err');
+    return;
+  }
+
+  const ver = tx.ben.includes('Verified');
+  const sus = tx.purpose === 'Personal Transfer';
   if(!ver||sus){
     addBlock('r3',tx,'invalid');
     log('r3-log',`Contract rejected: ${!ver?'ID not verified':'suspicious purpose'}. Nodes never reached.`,'err');
@@ -1087,10 +1096,10 @@ function r3Submit(){
 function r3Finalize(){
   if(!state.r3.pending){log('r3-log','No pending transaction','err');return;}
   const vs=Object.values(state.r3.votes);
-  if(vs.length<2){log('r3-log','Need at least 2 votes','err');return;}
+  if(vs.length<3){log('r3-log','Need at least 3 votes','err');return;}
   const ok=vs.filter(v=>v==='approve').length;
-  addBlock('r3',state.r3.pending,ok>=2?'valid':'invalid');
-  log('r3-log',ok>=2?`${ok}/3 approve — aid released`:`${ok}/3 — rejected`,ok>=2?'ok':'err');
+  addBlock('r3',state.r3.pending,ok>=3?'valid':'invalid');
+  log('r3-log',ok>=3?`${ok}/3 approve — aid released`:`${ok}/3 — rejected`,ok>=3?'ok':'err');
   state.r3.pending=null;state.r3.votes={};
   document.getElementById('r3-pending').classList.remove('on');
   renderNodes('r3-nodes',{},'r3');
@@ -1159,6 +1168,41 @@ function resetAll(){
     renderNodes(r+'-nodes',{},r);
   });
   updateTopbar();
+}
+// Hide/Show Tamper button based on role
+document.getElementById('r1-role').addEventListener('change', function() {
+  const role = this.value;
+  const btn = document.getElementById('tamperBtn');
+
+  if(role === 'Bad Actor'){
+    btn.style.display = 'inline-block';
+  } else {
+    btn.style.display = 'none';
+  }
+});
+
+document.getElementById('tamperBtn').style.display = 'none';
+
+function exportLedger(){
+  const data = {
+    round1: state.r1.blocks,
+    round2: state.r2.blocks,
+    round3: state.r3.blocks
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    {type: 'application/json'}
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ledger.json';
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
 
 // Init
